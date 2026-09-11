@@ -13,12 +13,58 @@ Built for [Hackathon Name] — Agentic AI Hackathon.
 - **Robustness**: tickers with insufficient price data are automatically detected and excluded, with a visible warning, instead of crashing or silently corrupting results
 
 ## Architecture
-FRED API ──┐
-├─► Macro Agent ──┐
-RSS Feeds ─┼─► News Agent ───┼─► Severity Assessment ──► [conditional] ──► Risk Agent ──► Memo Agent ──► Report Agent
-│ │ (VaR/Sharpe/
-yfinance ──┘ │ Drawdown/Corr)
-└─► Adaptive Threshold (learns from session history)
+
+```text
+                         ┌───────────────┐
+                         │    FRED API   │
+                         └───────┬───────┘
+                                 │
+                                 ▼
+                         ┌───────────────┐
+                         │  Macro Agent  │
+                         └───────┬───────┘
+                                 │
+                                 │
+┌───────────────┐                ▼
+│   RSS Feeds   │────────► ┌───────────────┐
+└───────────────┘          │   News Agent  │
+                           └───────┬───────┘
+                                   │
+                                   ▼
+                           ┌───────────────────┐
+                           │ Severity          │
+                           │ Assessment        │
+                           └─────────┬─────────┘
+                                     │
+                              ┌──────┴──────┐
+                              │ Conditional │
+                              │   Trigger   │
+                              └──────┬──────┘
+                                     │
+                            ┌────────▼────────┐
+                            │    Risk Agent   │
+                            │ VaR / Sharpe /  │
+                            │ Drawdown / Corr │
+                            └────────┬────────┘
+                                     │
+                                     ▼
+                            ┌─────────────────┐
+                            │    Memo Agent   │
+                            └────────┬────────┘
+                                     │
+                                     ▼
+                            ┌─────────────────┐
+                            │   Report Agent  │
+                            └─────────────────┘
+
+             ┌─────────────────────────────────────┐
+             │       Adaptive Threshold            │
+             │ Learns from recent session history  │
+             └─────────────────────────────────────┘
+
+                         yfinance
+                            │
+                            └──────────► Risk Agent
 
 
 Additional standalone modules, explorable independently of the main pipeline:
@@ -67,23 +113,39 @@ GROQ_API_KEY=your_groq_key
    streamlit run app.py
 ```
 
-## Project Structure
-sentinel/
-├── app.py # Streamlit UI + LangGraph pipeline wiring
-├── src/
-│ ├── risk.py # Core VaR/Sharpe/Drawdown/Correlation engine
-│ ├── macro.py # FRED-based macro surprise detection (z-score)
-│ ├── news.py # RSS + LLM sentiment scoring, adaptive threshold
-│ ├── severity.py # Severity tiering (Low/Medium/High)
-│ ├── report.py # Structured LLM-generated risk report
-│ ├── portfolio.py # Ticker universe + minimum-variance optimizer
-│ ├── analytics.py # Advanced metrics: CVaR, Sortino, Beta, skew/kurtosis
-│ ├── montecarlo.py # Bootstrap Monte Carlo simulation
-│ ├── forecast_model.py # Decision Tree / Logistic Regression event forecasting
-│ └── options_strategy.py # Black-Scholes covered call income overlay
-├── requirements.txt
-└── .env # Not committed — see Setup step 4
 
+## Project Structure
+
+```text
+sentinel/
+│
+├── app.py                         # Streamlit UI + LangGraph pipeline wiring
+│
+├── src/
+│   ├── __init__.py
+│   ├── risk.py                    # Core VaR, Sharpe, Drawdown, Correlation engine
+│   ├── macro.py                   # FRED-based macro surprise detection (z-score)
+│   ├── news.py                    # RSS + LLM sentiment scoring + adaptive threshold
+│   ├── severity.py                # Severity tiering (Low / Medium / High)
+│   ├── report.py                  # Structured LLM-generated risk report
+│   ├── portfolio.py               # Ticker universe + minimum-variance optimizer
+│   ├── analytics.py               # CVaR, Sortino, Beta, skewness, kurtosis
+│   ├── montecarlo.py              # Bootstrap Monte Carlo simulation
+│   ├── forecast_model.py          # Decision Tree / Logistic Regression forecasting
+│   └── options_strategy.py        # Black-Scholes covered call income overlay
+│
+├── notebooks/
+│   ├── NSE_Analyser.ipynb
+│   ├── langgraph_test.ipynb
+│   ├── macrodashboard.ipynb
+│   ├── newsagent.ipynb
+│   ├── sentinel_graph.ipynb
+│   └── test_imports.ipynb
+│
+├── requirements.txt               # Python dependencies
+├── .env.example                   # Environment variable template
+├── .gitignore                     # Git exclusions
+└── README.md                      # Project documentation
 
 ## Honest Engineering Notes (Design Decisions & Limitations)
 
