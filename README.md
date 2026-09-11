@@ -146,6 +146,7 @@ sentinel/
 ├── .env.example                   # Environment variable template
 ├── .gitignore                     # Git exclusions
 └── README.md                      # Project documentation
+```
 
 ## Honest Engineering Notes (Design Decisions & Limitations)
 
