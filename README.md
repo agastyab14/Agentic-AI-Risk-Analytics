@@ -65,7 +65,7 @@ Built for [Hackathon Name] — Agentic AI Hackathon.
                          yfinance
                             │
                             └──────────► Risk Agent
-
+```
 
 Additional standalone modules, explorable independently of the main pipeline:
 - **Deep Risk Analytics**: Historical/Parametric VaR, CVaR, Sortino Ratio, Beta, skew/kurtosis
@@ -88,7 +88,7 @@ Additional standalone modules, explorable independently of the main pipeline:
 ```bash
    git clone https://github.com/YOUR_USERNAME/sentinel-portfolio-risk.git
    cd sentinel-portfolio-risk
-```
+
 
 2. Create and activate a virtual environment:
 ```bash
